@@ -1,8 +1,19 @@
+import 'package:flutterMoviesApp/models/api_response.dart';
 import 'package:jaguar_serializer/jaguar_serializer.dart';
 part 'movie_details.jser.dart';
 
-class MovieDetails {
+class MovieDetails extends ApiResponse {
+    @Field(
+      isNullable: false,
+      dontDecode: false,
+      decodeFrom: 'ImdbId',
+      dontEncode: false)
   String imdbId;
+      @Field(
+      isNullable: false,
+      dontDecode: false,
+      decodeFrom: 'Title',
+      dontEncode: false)
   String title;
   String year;
   String rated;

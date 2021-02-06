@@ -1,5 +1,4 @@
-class ApiResponse<T> {
-  T data;
+class ApiResponse {
   bool response;
   String error;
 }

@@ -11,8 +11,8 @@ abstract class _$MovieDetailsSerializer implements Serializer<MovieDetails> {
   Map<String, dynamic> toMap(MovieDetails model) {
     if (model == null) return null;
     Map<String, dynamic> ret = <String, dynamic>{};
-    setMapValue(ret, 'imdbId', model.imdbId);
-    setMapValue(ret, 'title', model.title);
+    setMapValueIfNotNull(ret, 'imdbId', model.imdbId);
+    setMapValueIfNotNull(ret, 'title', model.title);
     setMapValue(ret, 'year', model.year);
     setMapValue(ret, 'rated', model.rated);
     setMapValue(
@@ -35,6 +35,8 @@ abstract class _$MovieDetailsSerializer implements Serializer<MovieDetails> {
     setMapValue(ret, 'boxOffice', model.boxOffice);
     setMapValue(ret, 'production', model.production);
     setMapValue(ret, 'website', model.website);
+    setMapValue(ret, 'response', model.response);
+    setMapValue(ret, 'error', model.error);
     return ret;
   }
 
@@ -42,8 +44,9 @@ abstract class _$MovieDetailsSerializer implements Serializer<MovieDetails> {
   MovieDetails fromMap(Map map) {
     if (map == null) return null;
     final obj = MovieDetails();
-    obj.imdbId = map['imdbId'] as String;
-    obj.title = map['title'] as String;
+    obj.imdbId =
+        map['ImdbId'] as String ?? getJserDefault('imdbId') ?? obj.imdbId;
+    obj.title = map['Title'] as String ?? getJserDefault('title') ?? obj.title;
     obj.year = map['year'] as String;
     obj.rated = map['rated'] as String;
     obj.released = dateTimeUtcProcessor.deserialize(map['released'] as String);
@@ -65,6 +68,8 @@ abstract class _$MovieDetailsSerializer implements Serializer<MovieDetails> {
     obj.boxOffice = map['boxOffice'] as String;
     obj.production = map['production'] as String;
     obj.website = map['website'] as String;
+    obj.response = map['response'] as bool;
+    obj.error = map['error'] as String;
     return obj;
   }
 }

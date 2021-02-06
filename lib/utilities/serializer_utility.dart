@@ -11,6 +11,7 @@ class SerializerUtility {
     _repo = new JsonRepo();
     _repo.add(MovieDetailsSerializer());
     _repo.add(MovieListItemSerializer());
+    _repo.add(MovieSearchListSerializer());
   }
 
   static SerializerUtility getInstance() {
@@ -24,13 +25,13 @@ class SerializerUtility {
     return jsonEncode(this._repo.getByType(T).toMap(object));
   }
 
-  T fromJson<T extends Serializer>(String json) {
-    var serializer = this._repo.getByType(T);
-    return serializer.fromMap(jsonDecode(json));
+  T fromJson<T>(Map<dynamic, dynamic> json) {
+    var serializer = this._repo.getByType<T>(T);
+    return serializer.fromMap(json);
   }
 
-  List<T> fromJsonArray<T>(String json) {
+  List<T> fromJsonArray<T>(List<Map<dynamic, dynamic>> json) {
     var serializer = this._repo.getByType(T);
-    return serializer.fromList(jsonDecode(json));
+    return serializer.fromList(json);
   }
 }
