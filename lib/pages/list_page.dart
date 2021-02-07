@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutterMoviesApp/models/movies_list_item.dart';
 import 'package:flutterMoviesApp/pages/details_page.dart';
 import 'package:flutterMoviesApp/providers/movie_list_provider.dart';
+import 'package:flutterMoviesApp/widgets/empty_list.dart';
+import 'package:flutterMoviesApp/widgets/lazy_grid_view.dart';
 import 'package:provider/provider.dart';
 
 class MoviesListPage extends StatefulWidget {
@@ -28,54 +30,20 @@ class _MoviesListPageState extends State<MoviesListPage> {
       else if (moviesProvider.movies != null &&
           moviesProvider.movies.length > 0) {
         this.movies = moviesProvider.movies;
-        return NotificationListener(
-          onNotification: onScroll,
-          child: Column(
-            children: [
-              Expanded(
-                child: GridView.builder(
-                  controller: _scrollController,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2),
-                  itemCount: moviesProvider.movies.length,
-                  itemBuilder: _buildItem,
-                ),
-              ),
-              moviesProvider.isLoading
-                  ? Container(
-                      margin: EdgeInsets.symmetric(vertical: 10),
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator())
-                  : SizedBox.shrink(),
-            ],
-          ),
+
+        return LazyLoadGridView<MovieListItem>(
+          itemsPerRow: 2,
+          data: this.movies,
+          itemBuilder: this._buildItem,
+          controller: this._scrollController,
+          isDataFetching: moviesProvider.isLoading,
+          onScrollEnd: moviesProvider.loadNextPage,
         );
+      } else if (moviesProvider.searchText == null ||
+          moviesProvider.searchText.isEmpty) {
+        return this.emptySearch();
       } else {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.search),
-                SizedBox(width: 10),
-                Text(
-                  'Looks like you haven\'t searched anything',
-                  style: TextStyle(fontWeight: FontWeight.w300),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            RaisedButton(
-              onPressed: () {
-                moviesProvider.setSearchMode(true);
-              },
-              child: Text('Search'),
-            )
-          ],
-        );
+        return NoData();
       }
     });
   }
@@ -139,6 +107,20 @@ class _MoviesListPageState extends State<MoviesListPage> {
           )
         ]),
       ),
+    );
+  }
+
+  Widget emptySearch() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.search),
+        SizedBox(width: 10),
+        Text(
+          'Looks like you haven\'t searched anything',
+          style: TextStyle(fontWeight: FontWeight.w300),
+        ),
+      ],
     );
   }
 

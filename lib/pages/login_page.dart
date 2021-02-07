@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     this._phoneNumberController = TextEditingController();
+    this._autoFill = SmsAutoFill();
   }
 
   @override
@@ -74,7 +75,9 @@ class _LoginPageState extends State<LoginPage> {
                     : Container(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(),
+                        child: Theme(
+                            data: ThemeData(primaryColor: Colors.white),
+                            child: CircularProgressIndicator()),
                       ),
               )
             ],

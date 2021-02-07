@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class SearchAppBar extends PreferredSize {
+  final TextEditingController controller;
   final VoidCallback onBackPress;
   final void Function(String) onSearchText;
   final void Function(String) onSearch;
   final VoidCallback onClearTap;
   SearchAppBar(
       {Key key,
+      this.controller,
       this.onBackPress,
       this.onSearchText,
       this.onSearch,
@@ -21,6 +23,7 @@ class SearchAppBar extends PreferredSize {
         onPressed: this.onBackPress,
       ),
       title: TextFormField(
+        controller: this.controller,
         autofocus: true,
         onChanged: this.onSearchText,
         onFieldSubmitted: this.onSearch,

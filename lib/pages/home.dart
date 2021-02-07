@@ -5,9 +5,7 @@ import 'package:flutterMoviesApp/widgets/search_appbar.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
-  Home({Key key, this.title}) : super(key: key);
-
-  final String title;
+  Home({Key key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -80,6 +78,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Widget get _search {
     var provider = Provider.of<MovieListProvider>(context, listen: false);
     return SearchAppBar(
+      controller: _controller,
       onBackPress: () {
         provider.setSearchMode(false);
       },
@@ -91,12 +90,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           provider.setSearchText('');
         }
       },
-      onSearch: provider.setSearchText,
+      onSearch: (_) => provider.fetchMovies(),
+      onSearchText: provider.setSearchText,
     );
   }
 
   onTabChange(int index) {
     var movieProvider = Provider.of<MovieListProvider>(context, listen: false);
+    movieProvider.setSearchText('');
+    this._controller.clear();
     movieProvider.setActiveTab(index);
   }
 

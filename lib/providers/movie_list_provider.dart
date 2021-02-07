@@ -27,10 +27,9 @@ class MovieListProvider extends ChangeNotifier {
 
   void setSearchText(String searchText) {
     this.searchText = searchText;
-    this._fetchMovies();
   }
 
-  void _fetchMovies() async {
+  void fetchMovies() async {
     this.isLoading = true;
     notifyListeners();
 
@@ -57,7 +56,7 @@ class MovieListProvider extends ChangeNotifier {
 
   void loadNextPage() {
     this.pageIndex++;
-    this._fetchMovies();
+    this.fetchMovies();
   }
 
   List<MovieListItem> get movies {
