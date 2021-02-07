@@ -5,10 +5,13 @@ class MovieRepository {
   List<MovieListItem> _movies;
   int searchResults;
 
+  List<MovieDetails> _movieDetails;
+
   MoviesService _moviesApiService;
 
   MovieRepository() {
     this._movies = [];
+    this._movieDetails = [];
     this._moviesApiService = MoviesService();
   }
 
@@ -34,6 +37,22 @@ class MovieRepository {
         this.searchResults = searchList.totalResults;
       }
       return this._movies;
+    }
+  }
+
+  Future<MovieDetails> getMovieDetails(String imdbId) async {
+    var movie = this._movieDetails.firstWhere(
+        (movie) => movie.imdbId.toLowerCase() == imdbId.toLowerCase(),
+        orElse: () => null);
+    if (movie != null) {
+      return movie;
+    } else {
+      var query = Map<String, String>()..putIfAbsent('i', () => imdbId);
+      var details = await this._moviesApiService.getMovieDetails(query);
+      if (details != null) {
+        this._movieDetails.add(details);
+      }
+      return details;
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterMoviesApp/models/movies_list_item.dart';
+import 'package:flutterMoviesApp/pages/details_page.dart';
 import 'package:flutterMoviesApp/providers/movie_list_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -84,25 +85,31 @@ class _MoviesListPageState extends State<MoviesListPage> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => MovieDetailsPage(imbdId: movie.imdbId)));
+        },
         child: Stack(children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
                 height: 180,
-                child: Image.network(
-                  movie.poster,
-                  errorBuilder: (context, _, __) => Icon(
-                      Icons.movie_creation_outlined,
-                      size: 60,
-                      color: Colors.grey),
-                  loadingBuilder: (context, child, progress) {
-                    return progress == null
-                        ? child
-                        : Center(child: CircularProgressIndicator());
-                  },
-                  fit: BoxFit.cover,
+                child: Hero(
+                  tag: movie.imdbId,
+                  child: Image.network(
+                    movie.poster,
+                    errorBuilder: (context, _, __) => Icon(
+                        Icons.movie_creation_outlined,
+                        size: 60,
+                        color: Colors.grey),
+                    loadingBuilder: (context, child, progress) {
+                      return progress == null
+                          ? child
+                          : Center(child: CircularProgressIndicator());
+                    },
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               Container(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterMoviesApp/pages/list_page.dart';
 import 'package:flutterMoviesApp/providers/movie_list_provider.dart';
+import 'package:flutterMoviesApp/widgets/search_appbar.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -17,34 +18,32 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   TabController _tabController;
   List<int> years;
 
+  Map<String, Widget> _tabs = {};
+
   @override
   void initState() {
     super.initState();
-    this._tabController = TabController(initialIndex: 0, vsync: this, length: 3)
-      ..addListener(() => onTabChange(this._tabController.index));
+    this.initializeTabs();
+    this._tabController =
+        TabController(initialIndex: 0, vsync: this, length: this._tabs.length)
+          ..addListener(() => onTabChange(this._tabController.index));
+  }
+
+  void initializeTabs() {
+    this._tabs = {'Movies': MoviesListPage(), 'Series': MoviesListPage()};
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<MovieListProvider>(
       builder: (context, movieProvider, _) => WillPopScope(
-        onWillPop: () async {
-          if (movieProvider.isSearchMode) {
-            _controller.clear();
-            movieProvider.setSearchMode(false);
-            return false;
-          }
-          return true;
-        },
+        onWillPop: this.onBackPress,
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: movieProvider.isSearchMode
-                ? Colors.white
-                : Theme.of(context).appBarTheme.color,
-            leading: Icon(Icons.movie_creation_rounded),
-            title: movieProvider.isSearchMode ? _search : Text('Movies App'),
-            actions: !movieProvider.isSearchMode
-                ? [
+          appBar: !movieProvider.isSearchMode
+              ? AppBar(
+                  leading: Icon(Icons.movie_creation_rounded),
+                  title: Text('Movies App'),
+                  actions: [
                     IconButton(
                       icon: Icon(movieProvider.isSearchMode
                           ? Icons.close
@@ -53,10 +52,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         movieProvider.setSearchMode(true);
                       },
                     ),
-                  ]
-                : null,
-            bottom: !movieProvider.isSearchMode
-                ? PreferredSize(
+                  ],
+                  bottom: PreferredSize(
                     preferredSize: Size.fromHeight(30),
                     child: Align(
                       alignment: Alignment.centerLeft,
@@ -66,57 +63,51 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               vertical: 10, horizontal: 15),
                           indicatorSize: TabBarIndicatorSize.label,
                           isScrollable: true,
-                          tabs: [
-                            Text('Movies'),
-                            Text('Series'),
-                            Text('Episodes')
-                          ]),
+                          tabs: this._tabs.keys.map((t) => Text(t)).toList()),
                     ),
-                  )
-                : null,
-          ),
+                  ),
+                )
+              : _search,
           body: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               controller: _tabController,
-              children: [
-                MoviesListPage(),
-                MoviesListPage(),
-                MoviesListPage(),
-              ]),
+              children: this._tabs.values.toList()),
         ),
       ),
     );
   }
 
-  TextFormField get _search {
+  Widget get _search {
     var provider = Provider.of<MovieListProvider>(context, listen: false);
-    return TextFormField(
-      controller: _controller,
-      autofocus: true,
-      textInputAction: TextInputAction.search,
-      onFieldSubmitted: provider.setSearchText,
-      decoration: InputDecoration(
-          hintText: 'Search',
-          isCollapsed: true,
-          isDense: true,
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 20.0),
-          suffixIcon: IconButton(
-              onPressed: () {
-                if (provider.searchText?.isEmpty ?? true) {
-                  provider.setSearchMode(false);
-                } else {
-                  this._controller.clear();
-                  provider.setSearchText('');
-                }
-              },
-              icon: Icon(Icons.close, color: Colors.black))),
+    return SearchAppBar(
+      onBackPress: () {
+        provider.setSearchMode(false);
+      },
+      onClearTap: () {
+        if (provider.searchText?.isEmpty ?? true) {
+          provider.setSearchMode(false);
+        } else {
+          this._controller.clear();
+          provider.setSearchText('');
+        }
+      },
+      onSearch: provider.setSearchText,
     );
   }
 
   onTabChange(int index) {
-    var provider = Provider.of<MovieListProvider>(context, listen: false);
-    provider.setActiveTab(index);
+    var movieProvider = Provider.of<MovieListProvider>(context, listen: false);
+    movieProvider.setActiveTab(index);
+  }
+
+  Future<bool> onBackPress() async {
+    var movieProvider = Provider.of<MovieListProvider>(context, listen: false);
+    if (movieProvider.isSearchMode) {
+      _controller.clear();
+      movieProvider.setSearchMode(false);
+      return false;
+    }
+    return true;
   }
 
   @override
