@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterMoviesApp/pages/list_page.dart';
 import 'package:flutterMoviesApp/providers/movie_list_provider.dart';
 import 'package:flutterMoviesApp/widgets/search_appbar.dart';
+import 'package:flutterMoviesApp/widgets/year_filter_dialog.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -89,6 +90,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           this._controller.clear();
           provider.setSearchText('');
         }
+      },
+      onFilterTap: () {
+        showDialog(
+            context: context,
+            builder: (dContext) => YearFilterDialog(
+                  onYearSelected: provider.setYear,
+                  selectedYear: provider.selectedYear,
+                  onClearYearFilter: () => provider.setYear(null),
+                ));
       },
       onSearch: (_) => provider.fetchMovies(),
       onSearchText: provider.setSearchText,

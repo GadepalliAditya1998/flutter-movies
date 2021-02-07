@@ -32,20 +32,22 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: StreamBuilder<User>(
-            stream: auth.userChanges(),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                case ConnectionState.waiting:
-                  return SplashScreen();
-                case ConnectionState.active:
-                case ConnectionState.done:
-                default:
-                  return snapshot.data == null ? LoginPage() : Home();
-                  break;
-              }
-            }),
+        home: SafeArea(
+          child: StreamBuilder<User>(
+              stream: auth.userChanges(),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                    return SplashScreen();
+                  case ConnectionState.active:
+                  case ConnectionState.done:
+                  default:
+                    return snapshot.data == null ? LoginPage() : Home();
+                    break;
+                }
+              }),
+        ),
       ),
     );
   }

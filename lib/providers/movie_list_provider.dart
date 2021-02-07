@@ -14,7 +14,7 @@ class MovieListProvider extends ChangeNotifier {
   MoviesQueryType activeTab = MoviesQueryType.movies;
 
   int pageIndex = 1;
-  int yearOfRelease;
+  int selectedYear;
 
   MovieListProvider() {
     this._movieRepository = MovieRepository();
@@ -29,6 +29,10 @@ class MovieListProvider extends ChangeNotifier {
     this.searchText = searchText;
   }
 
+  void setYear(int year) {
+    this.selectedYear = year;
+  }
+
   void fetchMovies() async {
     this.isLoading = true;
     notifyListeners();
@@ -37,6 +41,7 @@ class MovieListProvider extends ChangeNotifier {
           movieName: searchText,
           pageIndex: this.pageIndex,
           type: _movieTypeMap[this.activeTab],
+          year: selectedYear,
         );
     this.isLoading = false;
     if (result != null) {
@@ -77,11 +82,6 @@ class MovieListProvider extends ChangeNotifier {
           .toList();
     }
   }
-
-  // Map<String, String> get _query => {
-  //       's': this.searchText,
-  //       'page': '${this.pageIndex}',
-  //     };
 
   Map<MoviesQueryType, String> get _movieTypeMap => {
         MoviesQueryType.movies: 'movie',

@@ -16,13 +16,14 @@ class MovieRepository {
   }
 
   Future<List<MovieListItem>> getMovies(
-      {String movieName, int pageIndex, String type}) async {
+      {String movieName, int pageIndex, String type, int year}) async {
     if (movieName == null || movieName.trim().isEmpty) {
       return this._movies;
     } else {
       var query = Map<String, String>()
         ..putIfAbsent('s', () => movieName)
         ..putIfAbsent('page', () => '$pageIndex')
+        ..putIfAbsent('y', () => '$year')
         ..putIfAbsent('type', () => type);
 
       var searchList = await this._moviesApiService.searchMovies(query);
